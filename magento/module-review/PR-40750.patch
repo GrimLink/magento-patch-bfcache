@@ -1,0 +1,17 @@
+diff --git a/view/frontend/web/js/submit-review.js b/view/frontend/web/js/submit-review.js
+index bf8fb31cc97e2..305f641cf1395 100644
+--- a/view/frontend/web/js/submit-review.js
++++ b/view/frontend/web/js/submit-review.js
+@@ -9,6 +9,12 @@ define([
+     'use strict';
+ 
+     return function (config, element) {
++        $(window).on('pageshow', function (event) {
++            if (event.originalEvent.persisted) {
++                $(element).find('.submit').attr('disabled', false);
++            }
++        });
++
+         $(element).on('submit', function () {
+             if ($(this).valid()) {
+                 $(this).find('.submit').attr('disabled', true);

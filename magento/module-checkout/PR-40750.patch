@@ -1,0 +1,59 @@
+diff --git a/view/frontend/web/js/proceed-to-checkout.js b/view/frontend/web/js/proceed-to-checkout.js
+index f10c9f799b7a5..6189f5bb0a610 100644
+--- a/view/frontend/web/js/proceed-to-checkout.js
++++ b/view/frontend/web/js/proceed-to-checkout.js
+@@ -11,6 +11,12 @@ define([
+     'use strict';
+ 
+     return function (config, element) {
++        $(window).on('pageshow', function (event) {
++            if (event.originalEvent.persisted) {
++                $(element).attr('disabled', false);
++            }
++        });
++
+         $(element).on('click', function (event) {
+             var cart = customerData.get('cart'),
+                 customer = customerData.get('customer');
+diff --git a/view/frontend/web/js/sidebar.js b/view/frontend/web/js/sidebar.js
+index 1953df77563dc..c11cea92f6511 100644
+--- a/view/frontend/web/js/sidebar.js
++++ b/view/frontend/web/js/sidebar.js
+@@ -133,6 +133,18 @@ define([
+             };
+ 
+             this._on(this.element, events);
++            this._on(window, {
++
++                /**
++                 * Re-enable the checkout button when the page is restored from the BFCache,
++                 * as it is disabled on click to prevent double-submission during redirect.
++                 */
++                'pageshow': function (event) {
++                    if (event.originalEvent.persisted) {
++                        $(this.options.button.checkout).prop('disabled', false);
++                    }
++                }
++            });
+             this._calcHeight();
+         },
+ 
+diff --git a/view/frontend/web/js/view/minicart.js b/view/frontend/web/js/view/minicart.js
+index d94c6e65199ba..4a7dd97fd1d2d 100644
+--- a/view/frontend/web/js/view/minicart.js
++++ b/view/frontend/web/js/view/minicart.js
+@@ -109,6 +109,14 @@ define([
+                 customerData.reload(['cart'], false);
+             }
+ 
++            $(window).on('pageshow', function (event) {
++                if (event.originalEvent.persisted) {
++                    addToCartCalls = 0;
++                    self.isLoading(false);
++                    self.closeMinicart();
++                }
++            });
++
+             return this._super();
+         },
+         //jscs:enable requireCamelCaseOrUpperCaseIdentifiers

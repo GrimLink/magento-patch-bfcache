@@ -1,0 +1,40 @@
+{
+    "patches": {
+        "magento/module-catalog": {
+            "BFCache compatibility fixes": "patches/magento/module-catalog/PR-40750.patch"
+        },
+        "magento/module-checkout": {
+            "BFCache compatibility fixes": "patches/magento/module-checkout/PR-40750.patch"
+        },
+        "magento/module-cms": {
+            "BFCache compatibility fixes": "patches/magento/module-cms/PR-40750.patch"
+        },
+        "magento/module-customer": {
+            "BFCache compatibility fixes": "patches/magento/module-customer/PR-40750.patch"
+        },
+        "magento/module-multishipping": {
+            "BFCache compatibility fixes": "patches/magento/module-multishipping/PR-40750.patch"
+        },
+        "magento/module-newsletter": {
+            "BFCache compatibility fixes": "patches/magento/module-newsletter/PR-40750.patch"
+        },
+        "magento/module-page-cache": {
+            "BFCache compatibility fixes": "patches/magento/module-page-cache/PR-40750.patch"
+        },
+        "magento/module-review": {
+            "BFCache compatibility fixes": "patches/magento/module-review/PR-40750.patch"
+        },
+        "magento/module-theme": {
+            "BFCache compatibility fixes": "patches/magento/module-theme/PR-40750.patch"
+        },
+        "magento/theme-adminhtml-backend": {
+            "BFCache compatibility fixes": "patches/magento/theme-adminhtml-backend/PR-40750.patch"
+        },
+        "magento/framework": {
+            "BFCache compatibility fixes": "patches/magento/framework/PR-40750.patch"
+        },
+        "magento/magento2-base": {
+            "BFCache compatibility fixes": "patches/magento/magento2-base/PR-40750.patch"
+        }
+    }
+}

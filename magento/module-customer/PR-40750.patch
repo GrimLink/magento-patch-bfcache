@@ -1,0 +1,99 @@
+diff --git a/view/frontend/web/js/addressValidation.js b/view/frontend/web/js/addressValidation.js
+index 7afa50023d33d..c4d25356802af 100644
+--- a/view/frontend/web/js/addressValidation.js
++++ b/view/frontend/web/js/addressValidation.js
+@@ -37,6 +37,14 @@ define([
+             this.zipInput = $(this.options.selectors.zip, this.element);
+             this.countrySelect = $(this.options.selectors.country, this.element);
+ 
++            this._on(window, {
++                'pageshow': function (event) {
++                    if (event.originalEvent.persisted) {
++                        $(this.options.selectors.button, this.element).attr('disabled', false);
++                    }
++                }
++            });
++
+             this.element.validation({
+ 
+                 /**
+diff --git a/view/frontend/web/js/customer-data.js b/view/frontend/web/js/customer-data.js
+index 9b7130f0c69fd..9a1c0827539fb 100644
+--- a/view/frontend/web/js/customer-data.js
++++ b/view/frontend/web/js/customer-data.js
+@@ -433,6 +433,41 @@ define([
+         customerData.onAjaxComplete(xhr.responseJSON, settings);
+     });
+ 
++    /**
++     * Re-run section staleness checks when the page is restored from the BFCache so that
++     * the cart counter and other section-driven UI reflect any changes made while the page
++     * was cached (e.g. adding to cart on another page).
++     *
++     * Also compares the PHP-rendered login state (baked into the page at render time) with the
++     * current state in localStorage. If they differ the user logged in or out on another page
++     * while this one was cached, so a full reload is needed to get fresh server-rendered HTML.
++     */
++    $(window).on('pageshow', function (event) {
++        var backendLoggedIn, cacheStorage, customerSection, frontendLoggedIn;
++
++        if (event.originalEvent.persisted) {
++            customerData.init();
++
++            backendLoggedIn = Boolean(parseInt(options.isLoggedIn, 10) || 0);
++            frontendLoggedIn = false;
++
++            try {
++                cacheStorage = localStorage.getItem('mage-cache-storage');
++
++                if (cacheStorage) {
++                    customerSection = JSON.parse(cacheStorage).customer || null;
++                    frontendLoggedIn = Boolean(customerSection && customerSection.firstname);
++                }
++            } catch (e) {
++                // Ignore JSON parse errors
++            }
++
++            if (frontendLoggedIn !== backendLoggedIn) {
++                window.location.reload();
++            }
++        }
++    });
++
+     /**
+      * Events listener
+      */
+diff --git a/view/frontend/web/js/customer-global-session-loader.js b/view/frontend/web/js/customer-global-session-loader.js
+index 7ce72c5688f58..2c1eb69de51dd 100644
+--- a/view/frontend/web/js/customer-global-session-loader.js
++++ b/view/frontend/web/js/customer-global-session-loader.js
+@@ -22,6 +22,12 @@ define([
+                     customerData.reload([], false);
+                 }
+             });
++
++            $(window).on('pageshow', function (event) {
++                if (event.originalEvent.persisted && !customer().firstname) {
++                    customerData.reload([], false);
++                }
++            });
+         }
+     };
+ });
+diff --git a/view/frontend/web/js/view/authentication-popup.js b/view/frontend/web/js/view/authentication-popup.js
+index e2db8a95689c1..7cbaff1f9b62b 100644
+--- a/view/frontend/web/js/view/authentication-popup.js
++++ b/view/frontend/web/js/view/authentication-popup.js
+@@ -39,6 +39,12 @@ define([
+             loginAction.registerLoginCallback(function () {
+                 self.isLoading(false);
+             });
++
++            $(window).on('pageshow', function (event) {
++                if (event.originalEvent.persisted) {
++                    self.isLoading(false);
++                }
++            });
+         },
+ 
+         /**

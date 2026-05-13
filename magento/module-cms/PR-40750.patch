@@ -1,0 +1,13 @@
+diff --git a/Controller/Noroute/Index.php b/Controller/Noroute/Index.php
+index 6056332ddbe8b..9198de1215452 100644
+--- a/Controller/Noroute/Index.php
++++ b/Controller/Noroute/Index.php
+@@ -51,7 +51,7 @@ public function execute()
+         if ($resultPage) {
+             $resultPage->setStatusHeader(404, '1.1', 'Not Found');
+             $resultPage->setHeader('Status', '404 File not found');
+-            $resultPage->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0', true);
++            $resultPage->setHeader('Cache-Control', 'no-cache, must-revalidate, max-age=0', true);
+             return $resultPage;
+         } else {
+             /** @var \Magento\Framework\Controller\Result\Forward $resultForward */

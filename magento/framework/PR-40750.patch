@@ -1,0 +1,26 @@
+diff --git a/App/Response/Http.php b/App/Response/Http.php
+index d4dfa2ab2a279..704f1fedc9534 100644
+--- a/App/Response/Http.php
++++ b/App/Response/Http.php
+@@ -167,7 +167,7 @@ public function setPrivateHeaders($ttl)
+     public function setNoCacheHeaders()
+     {
+         $this->setHeader('pragma', 'no-cache', true);
+-        $this->setHeader('cache-control', 'no-store, no-cache, must-revalidate, max-age=0', true);
++        $this->setHeader('cache-control', 'no-cache, must-revalidate, max-age=0', true);
+         $this->setHeader('expires', $this->getExpirationHeader('-1 year'), true);
+     }
+ 
+diff --git a/App/Test/Unit/Response/HttpTest.php b/App/Test/Unit/Response/HttpTest.php
+index f2c71c0816dde..66de433ded0e7 100644
+--- a/App/Test/Unit/Response/HttpTest.php
++++ b/App/Test/Unit/Response/HttpTest.php
+@@ -297,7 +297,7 @@ public function testSetNoCacheHeaders(): void
+     {
+         $timestamp = 1000000;
+         $pragma = 'no-cache';
+-        $cacheControl = 'max-age=0, must-revalidate, no-cache, no-store';
++        $cacheControl = 'max-age=0, must-revalidate, no-cache';
+         $expiresResult ='Thu, 01 Jan 1970 00:00:00 GMT';
+ 
+         $this->dateTimeMock->expects($this->once())

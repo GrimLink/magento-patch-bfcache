@@ -1,0 +1,27 @@
+diff --git a/view/frontend/web/js/view/messages.js b/view/frontend/web/js/view/messages.js
+index 0b81e9757efb1..21ef5a8c101e3 100644
+--- a/view/frontend/web/js/view/messages.js
++++ b/view/frontend/web/js/view/messages.js
+@@ -28,6 +28,8 @@ define([
+          * Extends Component object by storage observable messages.
+          */
+         initialize: function () {
++            var self = this;
++
+             this._super().observe(
+                 [
+                     'cookieMessagesObservable'
+@@ -48,6 +50,13 @@ define([
+                 samesite: 'strict',
+                 domain: ''
+             });
++
++            $(window).on('pageshow', function (event) {
++                if (event.originalEvent.persisted) {
++                    self.cookieMessagesObservable([]);
++                    self.purgeMessages();
++                }
++            });
+         },
+ 
+         /**

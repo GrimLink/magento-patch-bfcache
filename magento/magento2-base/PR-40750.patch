@@ -1,0 +1,24 @@
+diff --git a/lib/web/mage/menu.js b/lib/web/mage/menu.js
+index 935b8fad1f3b6..28392403f3453 100644
+--- a/lib/web/mage/menu.js
++++ b/lib/web/mage/menu.js
+@@ -63,6 +63,19 @@ define([
+ 
+             this._assignControls()._listen();
+             this._setActiveMenu();
++            this._on(window, {
++
++                /**
++                 * Reset transient UI state when the page is restored from the BFCache.
++                 */
++                'pageshow': function (event) {
++                    if (event.originalEvent.persisted) {
++                        this.collapseAll();
++                        this.mouseHandled = false;
++                        $('html').removeClass('nav-open nav-before-open');
++                    }
++                }
++            });
+         },
+ 
+         /**

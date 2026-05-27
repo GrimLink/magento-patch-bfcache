@@ -1,26 +1,60 @@
 diff --git a/App/Response/Http.php b/App/Response/Http.php
-index d4dfa2ab2a279..704f1fedc9534 100644
+index d4dfa2ab2a279..5f3c1a8e9d721 100644
 --- a/App/Response/Http.php
 +++ b/App/Response/Http.php
-@@ -167,7 +167,7 @@ public function setPrivateHeaders($ttl)
+@@ -167,7 +167,13 @@ public function setPrivateHeaders($ttl)
      public function setNoCacheHeaders()
      {
          $this->setHeader('pragma', 'no-cache', true);
 -        $this->setHeader('cache-control', 'no-store, no-cache, must-revalidate, max-age=0', true);
-+        $this->setHeader('cache-control', 'no-cache, must-revalidate, max-age=0', true);
++        $cacheControlHeader = $this->getHeader('Cache-Control');
++        $existingValue = $cacheControlHeader ? $cacheControlHeader->getFieldValue() : '';
++        // Pages without public s-maxage (uncacheable layout) must retain no-store
++        // to prevent bfcache from restoring stale private content
++        $cacheControl = preg_match('/public.*s-maxage=\d+/', $existingValue)
++            ? 'no-cache, must-revalidate, max-age=0'
++            : 'no-store, no-cache, must-revalidate, max-age=0';
++        $this->setHeader('cache-control', $cacheControl, true);
          $this->setHeader('expires', $this->getExpirationHeader('-1 year'), true);
      }
- 
+
 diff --git a/App/Test/Unit/Response/HttpTest.php b/App/Test/Unit/Response/HttpTest.php
-index f2c71c0816dde..66de433ded0e7 100644
+index f2c71c0816dde..8b3a2c4f1e902 100644
 --- a/App/Test/Unit/Response/HttpTest.php
 +++ b/App/Test/Unit/Response/HttpTest.php
-@@ -297,7 +297,7 @@ public function testSetNoCacheHeaders(): void
-     {
-         $timestamp = 1000000;
-         $pragma = 'no-cache';
--        $cacheControl = 'max-age=0, must-revalidate, no-cache, no-store';
+@@ -313,7 +313,32 @@ public function testSetNoCacheHeaders(): void
+         $this->assertEquals($cacheControl, $this->model->getHeader('Cache-Control')->getFieldValue());
+         $this->assertEquals($expiresResult, $this->model->getHeader('Expires')->getFieldValue());
+     }
+
++    /**
++     * Test that no-store is omitted when the page already has public cacheable headers.
++     *
++     * @return void
++     */
++    public function testSetNoCacheHeadersForCacheablePage(): void
++    {
++        $timestamp = 1000000;
++        $pragma = 'no-cache';
 +        $cacheControl = 'max-age=0, must-revalidate, no-cache';
-         $expiresResult ='Thu, 01 Jan 1970 00:00:00 GMT';
- 
-         $this->dateTimeMock->expects($this->once())
++        $expiresResult ='Thu, 01 Jan 1970 00:00:00 GMT';
++
++        $this->dateTimeMock->expects($this->once())
++            ->method('strToTime')
++            ->with('-1 year')
++            ->willReturn($timestamp);
++        $this->dateTimeMock->expects($this->once())
++            ->method('gmDate')
++            ->with(Http::EXPIRATION_TIMESTAMP_FORMAT, $timestamp)
++            ->willReturn($expiresResult);
++
++        $this->model->setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400', true);
++        $this->model->setNoCacheHeaders();
++        $this->assertEquals($pragma, $this->model->getHeader('Pragma')->getFieldValue());
++        $this->assertEquals($cacheControl, $this->model->getHeader('Cache-Control')->getFieldValue());
++        $this->assertEquals($expiresResult, $this->model->getHeader('Expires')->getFieldValue());
++    }
++
+     /**
+      * Test setting body in JSON format.
+      *

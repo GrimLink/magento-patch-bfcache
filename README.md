@@ -15,7 +15,7 @@ These patches improve Magento 2 by:
 
 ## How to Install
 
-These patches are designed to be used with the [cweagans/composer-patches](https://docs.cweagans.net/composer-patches/) plugin. The plugin automatically looks for a `patches.json` file in your project root.
+These patches work with any Composer-based patch tool, including [cweagans/composer-patches](https://docs.cweagans.net/composer-patches/) and [vaimo/composer-patches](https://github.com/vaimo/composer-patches). Choose the option that fits your setup.
 
 ### Option 1: Git Clone (Recommended)
 
@@ -59,7 +59,18 @@ composer patches-relock
 composer patches-repatch
 ```
 
-### Option 3: Using the "Mage" Repository
+### Option 3: Composer Require (vaimo/composer-patches)
+
+If you are using [vaimo/composer-patches](https://github.com/vaimo/composer-patches) with package patch sources enabled, you can install this package directly via Composer and vaimo will pick up and apply the patches automatically.
+
+```bash
+composer require grimlink/magento-bfcache-patches
+```
+
+> [!WARNING]
+> This method requires `vaimo/composer-patches` with package-level patch sources enabled. See the [vaimo/composer-patches documentation](https://github.com/vaimo/composer-patches) for the required configuration. If you are using `cweagans/composer-patches`, use [Option 1](#option-1-git-clone-recommended) instead.
+
+### Option 4: Using the "Mage" Repository
 
 If you are using the [GrimLink/mage](https://github.com/GrimLink/mage/) distribution or its tools, there is a built-in option to add this patch set automatically.
 

@@ -2,7 +2,7 @@ diff --git a/App/Response/Http.php b/App/Response/Http.php
 index d4dfa2ab2a279..5f3c1a8e9d721 100644
 --- a/App/Response/Http.php
 +++ b/App/Response/Http.php
-@@ -167,7 +167,13 @@ public function setPrivateHeaders($ttl)
+@@ -167,7 +167,14 @@ public function setPrivateHeaders($ttl)
      public function setNoCacheHeaders()
      {
          $this->setHeader('pragma', 'no-cache', true);
@@ -22,7 +22,7 @@ diff --git a/App/Test/Unit/Response/HttpTest.php b/App/Test/Unit/Response/HttpTe
 index f2c71c0816dde..8b3a2c4f1e902 100644
 --- a/App/Test/Unit/Response/HttpTest.php
 +++ b/App/Test/Unit/Response/HttpTest.php
-@@ -313,7 +313,32 @@ public function testSetNoCacheHeaders(): void
+@@ -313,7 +313,35 @@ public function testSetNoCacheHeaders(): void
          $this->assertEquals($cacheControl, $this->model->getHeader('Cache-Control')->getFieldValue());
          $this->assertEquals($expiresResult, $this->model->getHeader('Expires')->getFieldValue());
      }
